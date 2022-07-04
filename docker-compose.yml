@@ -1,0 +1,26 @@
+services:
+  pg_db: #host
+    image: postgres
+    # restart: always
+    container_name: userdb
+    env_file:
+      - .env 
+    ports:
+      - "5432:5432"
+
+  migrate: 
+    image: artsafin/goose-migrations
+    container_name: user_migrate
+    volumes:
+      - ./migrations:/migrations
+    entrypoint: ["goose", "postgres", "postgres://pguser:pass@localhost:5432/userdb?sslmode=disable"]
+    command: up
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=SuperSecret
+    ports:
+      - "8081:80"
