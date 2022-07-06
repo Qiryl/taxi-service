@@ -15,37 +15,45 @@ type Handler struct {
 
 func NewHandler(userConn *grpc.ClientConn) Handler {
 	return Handler{pb.NewUserClient(userConn)}
+}
 
+type RegisterReq struct {
+	Username string `json:"username"`
+	Phone    string `json:"phone"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func (h *Handler) RegisterHandler(c *gin.Context) {
 	var req pb.RegisterRequest
-	if err := c.BindJSON(&req); err != nil {
-		fmt.Println("BindJSON error:", err)
-	}
-	fmt.Println("Register req", &req)
 
+	err := c.BindJSON(&req)
+	if err != nil {
+		log.Fatalln("BindJSON error:", err)
+	}
+
+	fmt.Println("IN REGISTER HANDLER")
 	resp, err := h.UserClient.Register(c, &req)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 	fmt.Println("Register auth req", &resp)
 
-	c.JSON(200, resp)
+	// c.JSON(200, resp)
 }
 
 func (h *Handler) LoginHandler(c *gin.Context) {
 	var req pb.LoginRequest
 	if err := c.BindJSON(&req); err != nil {
-		log.Fatalln(err.Error())
+		fmt.Println(err.Error())
 	}
-	log.Println("Register req", &req)
+	log.Println("Login req", &req)
 
 	resp, err := h.UserClient.Login(c, &req)
 	if err != nil {
-		log.Fatalln(err.Error())
+		fmt.Println(err.Error())
 	}
-	log.Println("Register auth req", &resp)
+	log.Println("Login auth req", &resp)
 
 	c.JSON(200, resp)
 }

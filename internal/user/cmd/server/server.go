@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
 
@@ -14,26 +13,22 @@ import (
 
 func main() {
 	// Starting grpc server
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 9000))
+	lis, err := net.Listen("tcp", ":9000")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	// Open connection to db
-	db, err := sqlx.Open("postgres", "postgres://pguser:pass@localhost:5432/userdb?sslmode=disable")
+	db, err := sqlx.Open("postgres", "postgres://pguser:pass@pg_db:5432/userdb?sslmode=disable")
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %s", err)
 	}
-	fmt.Println("Connected to db")
 
 	s := userGrpc.NewUserServer(db)
 	grpcServer := grpc.NewServer()
 	userPb.RegisterUserServer(grpcServer, s)
-	fmt.Println("Preparing grpc server")
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
-	fmt.Println("GRPC server started")
-
 }
