@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/Qiryl/taxi-service/internal/user/rest"
+	"github.com/Qiryl/taxi-service/internal/user/delivery/http"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -18,9 +18,9 @@ func main() {
 	}
 	defer conn.Close()
 
-	// Starting http server
-	h := rest.NewHandler(conn)
+	h := http.NewHandler(conn)
 
+	// Starting http server
 	router := gin.Default()
 	router.POST("/register", h.RegisterHandler)
 	router.POST("/login", h.LoginHandler)
