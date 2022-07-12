@@ -2,7 +2,7 @@ package psql
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/Qiryl/taxi-service/internal/user/domain"
 	"github.com/jmoiron/sqlx"
@@ -19,12 +19,13 @@ func NewPsqlUserRepo(db *sqlx.DB) *psqlUserRepo {
 func (repo *psqlUserRepo) psqlConnect(ctx context.Context) (*sqlx.Conn, error) {
 	conn, err := repo.db.Connx(ctx)
 	if err != nil {
-		return nil, errors.New("Failed to connect to psql: " + err.Error())
+		return nil, err
 	}
 	return conn, nil
 }
 
 func (repo *psqlUserRepo) Register(ctx context.Context, user *domain.User) error {
+	//TODO: move connection to struct
 	conn, err := repo.psqlConnect(ctx)
 	if err != nil {
 		return err
@@ -35,14 +36,14 @@ func (repo *psqlUserRepo) Register(ctx context.Context, user *domain.User) error
 
 	_, err = repo.db.ExecContext(ctx, query, user.Name, user.Phone, user.Email, user.Password)
 	if err != nil {
-		return errors.New("Failed to register: " + err.Error())
+		return fmt.Errorf("Repo Register: failed executing db insert: %w", err)
 	}
 
 	return nil
 }
 
-// Select user by phone number and return password
 func (repo *psqlUserRepo) GetPassByPhone(ctx context.Context, phone string) (string, error) {
+	//TODO: move connection to struct
 	conn, err := repo.psqlConnect(ctx)
 	if err != nil {
 		return "", err
@@ -54,7 +55,7 @@ func (repo *psqlUserRepo) GetPassByPhone(ctx context.Context, phone string) (str
 
 	err = repo.db.GetContext(ctx, &password, query, phone)
 	if err != nil {
-		return "", errors.New("Failed to login: " + err.Error())
+		return "", fmt.Errorf("Repo GetPassByPhone: failed executing db select: %w", err)
 	}
 
 	return password, nil

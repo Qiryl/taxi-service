@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"time"
 
 	"github.com/Qiryl/taxi-service/internal/user/domain"
@@ -23,12 +23,12 @@ func NewUserUsecase(userRepo domain.UserRepository) *UserUsecase {
 
 func (uc *UserUsecase) Register(ctx context.Context, user *domain.User) error {
 	if err := user.EncryptPassword(); err != nil {
-		return err
+		return fmt.Errorf("Usecase Register: %w", err)
 	}
 
 	err := uc.userRepo.Register(ctx, user)
 	if err != nil {
-		return err
+		return fmt.Errorf("Usecase Register: %w", err)
 	}
 
 	return nil
@@ -38,12 +38,12 @@ func (uc *UserUsecase) Register(ctx context.Context, user *domain.User) error {
 func (uc *UserUsecase) Login(ctx context.Context, req *domain.LoginRequest) error {
 	password, err := uc.userRepo.GetPassByPhone(ctx, req.Phone)
 	if err != nil {
-		return err
+		return fmt.Errorf("Usecase Login: %w", err)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(password), []byte(req.Password))
 	if err != nil {
-		return errors.New("Incorrect password: " + err.Error())
+		return fmt.Errorf("Usecase Login: CompareHashAndPassword: %w", err)
 	}
 
 	return nil

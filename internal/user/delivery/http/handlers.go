@@ -1,7 +1,6 @@
 package http
 
 import (
-	"log"
 	"net/http"
 
 	pb "github.com/Qiryl/taxi-service/proto/user"
@@ -22,12 +21,14 @@ func (h *Handler) Register(c *gin.Context) {
 
 	err := c.BindJSON(&req)
 	if err != nil {
-		log.Fatalln("BindJSON error:", err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	resp, err := h.UserClient.Register(c, &req)
 	if err != nil {
-		log.Fatalln(err.Error())
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, resp)
@@ -36,12 +37,14 @@ func (h *Handler) Register(c *gin.Context) {
 func (h *Handler) Login(c *gin.Context) {
 	var req pb.LoginRequest
 	if err := c.BindJSON(&req); err != nil {
-		log.Fatalln("BindJSON error:", err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	resp, err := h.UserClient.Login(c, &req)
 	if err != nil {
-		log.Fatalln(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, resp)

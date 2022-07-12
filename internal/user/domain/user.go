@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -35,7 +36,7 @@ type UserRepository interface {
 func (u *User) EncryptPassword() error {
 	password, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.MinCost)
 	if err != nil {
-		return err
+		return fmt.Errorf("EncryptPassword: %w", err)
 	}
 	u.Password = string(password)
 	return nil

@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/Qiryl/taxi-service/internal/user/domain"
@@ -25,7 +26,7 @@ func (s *GrpcUserServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.A
 		Password: req.Password,
 	}
 	if err := s.userUc.Login(ctx, loginReq); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Grpc Login: %w", err)
 	}
 
 	return &pb.AuthResponse{Token: ""}, nil
@@ -41,7 +42,7 @@ func (s *GrpcUserServer) Register(ctx context.Context, req *pb.RegisterRequest) 
 		RegisteredAt: time.Time{},
 	}
 	if err := s.userUc.Register(ctx, user); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Grpc Register: %w", err)
 	}
 
 	return &pb.AuthResponse{Token: ""}, nil
