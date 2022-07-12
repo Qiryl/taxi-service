@@ -2,6 +2,7 @@ package http
 
 import (
 	"log"
+	"net/http"
 
 	pb "github.com/Qiryl/taxi-service/proto/user"
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,7 @@ func NewHandler(userConn *grpc.ClientConn) Handler {
 	return Handler{pb.NewUserClient(userConn)}
 }
 
-func (h *Handler) RegisterHandler(c *gin.Context) {
+func (h *Handler) Register(c *gin.Context) {
 	var req pb.RegisterRequest
 
 	err := c.BindJSON(&req)
@@ -29,10 +30,10 @@ func (h *Handler) RegisterHandler(c *gin.Context) {
 		log.Fatalln(err.Error())
 	}
 
-	c.JSON(200, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
-func (h *Handler) LoginHandler(c *gin.Context) {
+func (h *Handler) Login(c *gin.Context) {
 	var req pb.LoginRequest
 	if err := c.BindJSON(&req); err != nil {
 		log.Fatalln("BindJSON error:", err)
@@ -43,5 +44,5 @@ func (h *Handler) LoginHandler(c *gin.Context) {
 		log.Fatalln(err)
 	}
 
-	c.JSON(200, resp)
+	c.JSON(http.StatusOK, resp)
 }

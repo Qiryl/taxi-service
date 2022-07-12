@@ -34,7 +34,7 @@ func (uc *UserUsecase) Register(ctx context.Context, user *domain.User) error {
 	return nil
 }
 
-// Should return whole User strcut
+// TODO: return whole User strcut
 func (uc *UserUsecase) Login(ctx context.Context, req *domain.LoginRequest) error {
 	password, err := uc.userRepo.GetPassByPhone(ctx, req.Phone)
 	if err != nil {

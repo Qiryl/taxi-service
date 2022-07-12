@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./docker/user.Dockerfile
+      dockerfile: ./build/user.Dockerfile
     depends_on: 
       pg_db:
         condition: service_healthy

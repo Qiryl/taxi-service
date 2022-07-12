@@ -1,11 +1,11 @@
 -- +goose Up
 create table users (
-		user_id uuid primary key default gen_random_uuid(),
-		user_name text,
-		user_phone text,
-		user_email text,
-		user_password text,
-		user_registration_date date
+		id uuid primary key default gen_random_uuid(),
+		name text,
+		phone text,
+		email text,
+		password text,
+		registration_date date
 		-- user_rating int as sum of column in user_ride table
 );
 
@@ -23,7 +23,7 @@ create table user_ride (
 		taxi_type taxi,
 
 		-- ride_rating 
-		foreign key(user_id) references users(user_id) 
+		foreign key(user_id) references users(id) 
 );
 
 -- +goose Down
