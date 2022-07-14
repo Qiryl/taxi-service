@@ -12,22 +12,16 @@ type psqlUserRepo struct {
 	db *sqlx.DB
 }
 
+var _ domain.UserRepository = &psqlUserRepo{}
+
 func NewPsqlUserRepo(db *sqlx.DB) *psqlUserRepo {
 	return &psqlUserRepo{db: db}
 }
 
-func (repo *psqlUserRepo) psqlConnect(ctx context.Context) (*sqlx.Conn, error) {
-	conn, err := repo.db.Connx(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return conn, nil
-}
-
 func (repo *psqlUserRepo) Register(ctx context.Context, user *domain.User) error {
-	query := "INSERT INTO users (name, phone, email, password) VALUES ($1, $2, $3, $4)"
+	query := `INSERT INTO users (id, name, phone, email, password, registration_date) VALUES ($1, $2, $3, $4, $5, $6)`
 
-	_, err := repo.db.ExecContext(ctx, query, user.Name, user.Phone, user.Email, user.Password)
+	_, err := repo.db.ExecContext(ctx, query, user.ID, user.Name, user.Phone, user.Email, user.Password, user.RegisteredAt)
 	if err != nil {
 		return fmt.Errorf("Repo Register: failed executing db insert: %w", err)
 	}
@@ -35,14 +29,14 @@ func (repo *psqlUserRepo) Register(ctx context.Context, user *domain.User) error
 	return nil
 }
 
-func (repo *psqlUserRepo) GetPassByPhone(ctx context.Context, phone string) (string, error) {
-	query := "SELECT password FROM users WHERE phone = $1"
-	var password string
+func (repo *psqlUserRepo) GetUserByPhone(ctx context.Context, phone string) (*domain.User, error) {
+	query := `SELECT * FROM users WHERE phone = $1`
+	var user domain.User
 
-	err := repo.db.GetContext(ctx, &password, query, phone)
+	err := repo.db.GetContext(ctx, &user, query, phone)
 	if err != nil {
-		return "", fmt.Errorf("Repo GetPassByPhone: failed executing db select: %w", err)
+		return nil, fmt.Errorf("Repo GetPassByPhone: failed executing db select: %w", err)
 	}
 
-	return password, nil
+	return &user, nil
 }

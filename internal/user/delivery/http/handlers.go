@@ -3,49 +3,64 @@ package http
 import (
 	"net/http"
 
-	pb "github.com/Qiryl/taxi-service/proto/user"
+	"github.com/Qiryl/taxi-service/internal/user/domain"
+	"github.com/Qiryl/taxi-service/internal/user/usecase"
 	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
 )
 
 type Handler struct {
-	pb.UserClient
+	uc usecase.UserUsecase
 }
 
-func NewHandler(userConn *grpc.ClientConn) Handler {
-	return Handler{pb.NewUserClient(userConn)}
+func NewHandler(uc usecase.UserUsecase) Handler {
+	return Handler{uc: uc}
 }
 
 func (h *Handler) Register(c *gin.Context) {
-	var req pb.RegisterRequest
+	var inp registerInp
 
-	err := c.BindJSON(&req)
+	err := c.BindJSON(&inp)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = h.uc.Register(c, &domain.User{
+		Name:     inp.Name,
+		Phone:    inp.Phone,
+		Email:    inp.Email,
+		Password: inp.Password,
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	resp, err := h.UserClient.Register(c, &req)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.JSON(http.StatusOK, resp)
+	// TODO: Return success message
+	c.JSON(http.StatusOK, "")
 }
 
 func (h *Handler) Login(c *gin.Context) {
-	var req pb.LoginRequest
-	if err := c.BindJSON(&req); err != nil {
+	var inp loginInp
+	if err := c.BindJSON(&inp); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	resp, err := h.UserClient.Login(c, &req)
+	user, err := h.uc.Login(c, &domain.LoginRequest{
+		Phone:    inp.Phone,
+		Password: inp.Password,
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	c.JSON(http.StatusOK, &loginOut{
+		Name:     user.Name,
+		Phone:    user.Phone,
+		Email:    user.Email,
+		Password: user.Password,
+		Token:    "",
+	})
 }

@@ -2,20 +2,18 @@ package domain
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	ID           uuid.UUID
-	Name         string
-	Phone        string
-	Email        string
-	Password     string
-	RegisteredAt time.Time
+	ID           uuid.UUID `db:"id"`
+	Name         string    `db:"name"`
+	Phone        string    `db:"phone"`
+	Email        string    `db:"email"`
+	Password     string    `db:"password"`
+	RegisteredAt time.Time `db:"registration_date"`
 }
 
 type LoginRequest struct {
@@ -25,19 +23,10 @@ type LoginRequest struct {
 
 type UserUsecase interface {
 	Register(ctx context.Context, user *User) error
-	Login(ctx context.Context, req *LoginRequest) error
+	Login(ctx context.Context, req *LoginRequest) (*User, error)
 }
 
 type UserRepository interface {
 	Register(ctx context.Context, user *User) error
-	GetPassByPhone(ctx context.Context, phone string) (string, error)
-}
-
-func (u *User) EncryptPassword() error {
-	password, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.MinCost)
-	if err != nil {
-		return fmt.Errorf("EncryptPassword: %w", err)
-	}
-	u.Password = string(password)
-	return nil
+	GetUserByPhone(ctx context.Context, phone string) (*User, error)
 }

@@ -35,13 +35,13 @@ services:
     entrypoint: ["goose", "postgres", "postgres://pguser:pass@pg_db:5432/userdb?sslmode=disable"]
     command: up
 
-  # pgadmin:
-  #   image: dpage/pgadmin4
-  #   logging:
-  #     driver: none
-  #   container_name: pgadmin
-  #   environment:
-  #     - PGADMIN_DEFAULT_EMAIL=user@domain.com
-  #     - PGADMIN_DEFAULT_PASSWORD=SuperSecret
-  #   ports:
-  #     - "8081:80"
+  pgadmin:
+    image: dpage/pgadmin4
+    logging:
+      driver: none
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=SuperSecret
+    ports:
+      - "8081:80"

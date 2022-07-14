@@ -21,14 +21,6 @@ func NewGrpcUserServer(uc domain.UserUsecase) *GrpcUserServer {
 }
 
 func (s *GrpcUserServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.AuthResponse, error) {
-	loginReq := &domain.LoginRequest{
-		Phone:    req.Phone,
-		Password: req.Password,
-	}
-	if err := s.userUc.Login(ctx, loginReq); err != nil {
-		return nil, fmt.Errorf("Grpc Login: %w", err)
-	}
-
 	return &pb.AuthResponse{Token: ""}, nil
 }
 

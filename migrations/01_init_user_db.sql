@@ -1,11 +1,11 @@
 -- +goose Up
 create table users (
-		id uuid primary key default gen_random_uuid(),
+		id uuid primary key,
 		name text,
 		phone text,
 		email text,
 		password text,
-		registration_date date
+		registration_date timestamp without time zone not null
 		-- user_rating int as sum of column in user_ride table
 );
 
