@@ -2,12 +2,12 @@ package main
 
 import (
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/Qiryl/taxi-service/internal/user/config"
 	"github.com/Qiryl/taxi-service/internal/user/delivery/http"
-	"github.com/Qiryl/taxi-service/internal/user/repo/psql"
-	"github.com/Qiryl/taxi-service/internal/user/usecase"
-	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -31,15 +31,13 @@ func main() {
 		log.Println(err)
 	}
 
-	userRepo := psql.NewPsqlUserRepo(db)
-	userUc := usecase.NewUserUsecase(userRepo)
-
-	router := gin.Default()
-	handler := http.NewHandler(*userUc)
-	router.POST("/register", handler.Register)
-	router.POST("/login", handler.Login)
+	router := http.NewRouter(db)
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	if err := router.Run(":" + httpCfg.Port); err != nil {
 		log.Fatalln(err)
 	}
+
+	<-done
 }

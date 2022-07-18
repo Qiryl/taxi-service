@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Qiryl/taxi-service/internal/user/domain"
@@ -25,6 +26,8 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
+	// TODO: Validate inp
+
 	err = h.uc.Register(c, &domain.User{
 		Name:     inp.Name,
 		Phone:    inp.Phone,
@@ -36,8 +39,9 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	// TODO: Return success message
-	c.JSON(http.StatusOK, "")
+	c.JSON(http.StatusOK, &registerOut{
+		Message: fmt.Sprintf("User: %s with phone number: %s created successfully", inp.Name, inp.Phone),
+	})
 }
 
 func (h *Handler) Login(c *gin.Context) {

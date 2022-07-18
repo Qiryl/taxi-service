@@ -23,6 +23,7 @@ func NewUserUsecase(userRepo domain.UserRepository) *UserUsecase {
 	}
 }
 
+// TODO: Check for existing user in db by his phone
 func (uc *UserUsecase) Register(ctx context.Context, user *domain.User) error {
 	password, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.MinCost)
 	if err != nil {
