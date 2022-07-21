@@ -10,8 +10,8 @@ import (
 
 // Split to the separate usecases?
 type Usecase interface {
-	SignUp(ctx context.Context, dto dtos.DriverDTO) error
-	SignIn(ctx context.Context, dto dtos.LoginDTO) (*dtos.DriverDTO, error)
+	SignUp(ctx context.Context, dto *dtos.DriverDTO) error
+	SignIn(ctx context.Context, dto *dtos.LoginDTO) (*dtos.DriverDTO, error)
 }
 
 type DriverService struct {
@@ -26,7 +26,7 @@ func NewDriverUsecase(repo domain.Repository) *DriverService {
 	}
 }
 
-func (d *DriverService) SignUp(ctx context.Context, dto dtos.DriverDTO) error {
+func (d *DriverService) SignUp(ctx context.Context, dto *dtos.DriverDTO) error {
 	driver := dto.ToModel()
 
 	//
@@ -47,7 +47,7 @@ func (d *DriverService) SignUp(ctx context.Context, dto dtos.DriverDTO) error {
 	return nil
 }
 
-func (d *DriverService) SignIn(ctx context.Context, dto dtos.LoginDTO) (*dtos.DriverDTO, error) {
+func (d *DriverService) SignIn(ctx context.Context, dto *dtos.LoginDTO) (*dtos.DriverDTO, error) {
 	login := dto.ToModel()
 
 	driver, err := d.repo.GetDriverByPhone(ctx, login.Phone)
