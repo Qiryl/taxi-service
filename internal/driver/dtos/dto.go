@@ -20,7 +20,7 @@ func (dto *DriverDTO) ToModel() *domain.Driver {
 	}
 }
 
-func toDriverDto(model *domain.Driver) *DriverDTO {
+func ToDriverDto(model *domain.Driver) *DriverDTO {
 	return &DriverDTO{
 		Name:     model.Name,
 		Phone:    model.Phone,
@@ -42,7 +42,7 @@ func (dto *LoginDTO) ToModel() *domain.Login {
 	}
 }
 
-func toLoginDto(model *domain.Login) *LoginDTO {
+func ToLoginDto(model *domain.Login) *LoginDTO {
 	return &LoginDTO{
 		Phone:    model.Phone,
 		Password: model.Password,
