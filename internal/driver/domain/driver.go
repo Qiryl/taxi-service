@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"time"
 
+<<<<<<< Updated upstream
+=======
+	"github.com/go-playground/validator/v10"
+>>>>>>> Stashed changes
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -51,6 +55,7 @@ type Login struct {
 	Password string `validate:"required,min=6,max=20"`
 }
 
+<<<<<<< Updated upstream
 // func (l *Login) Validate(val *validator.Validate) error {
 // 	err := val.Struct(l)
 // 	if err != nil {
@@ -59,3 +64,14 @@ type Login struct {
 //
 // 	return nil
 // }
+=======
+func (l *Login) Validate(val *validator.Validate) error {
+	// validate.
+	err := val.Struct(l)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+>>>>>>> Stashed changes
