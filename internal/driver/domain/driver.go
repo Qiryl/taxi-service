@@ -10,11 +10,11 @@ import (
 
 type Driver struct {
 	ID        uuid.UUID
-	Name      string
-	Phone     string
-	Email     string
-	Password  string
-	TaxiType  string
+	Name      string `validate:"required,max=30"`
+	Phone     string `validate:"required,e164"`
+	Email     string `validate:"required,email"`
+	Password  string `validate:"required,min=6,max=25"`
+	TaxiType  string `validate:"required"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -47,6 +47,15 @@ func (d *Driver) CheckPassword(password string) error {
 }
 
 type Login struct {
-	Phone    string
-	Password string
+	Phone    string `validate:"required"`
+	Password string `validate:"required,min=6,max=20"`
 }
+
+// func (l *Login) Validate(val *validator.Validate) error {
+// 	err := val.Struct(l)
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	return nil
+// }

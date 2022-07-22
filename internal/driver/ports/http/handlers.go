@@ -11,6 +11,7 @@ import (
 
 type Handler struct {
 	driver app.DriverService
+	// order
 }
 
 func (h *Handler) SignUp(ctx *gin.Context) {
